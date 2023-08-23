@@ -1,0 +1,27 @@
+.wrapper{
+    display: flex;
+    flex-direction: row;
+    
+}
+
+.container{
+    padding: 5px;
+    background-color: black;
+    min-height: 60vh;
+    display: flex;
+    margin: 0px 10px;
+    min-width: 20vw;
+    
+}
+
+.started {
+    background-color: darkgray;
+}
+
+.inProgress {
+    background-color: yellow;
+}
+
+.done {
+    background-color: green;
+}
