@@ -62,7 +62,7 @@ export default function Home() {
 
     return (
         <div className='wrapper'>
-            <div className='started container'>
+            <div className='started container' onDrop={moveCard} onDragOver={(e) => { e.preventDefault() }}>
                 {
                     data.started.map((card) => <div draggable onDragStart={(e) => { e.dataTransfer.setData("cardid", card.id); e.dataTransfer.setData("source", "started"); }} id='card'>{card.taskName}</div>)
                 }

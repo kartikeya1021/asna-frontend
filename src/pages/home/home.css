@@ -1,27 +1,51 @@
 .wrapper{
+    width: 100%;
+    height: 95vh;
     display: flex;
     flex-direction: row;
-    
+    justify-content: center;
+    background-color: beige;
+    padding: 20px;
+
 }
 
 .container{
     padding: 5px;
     background-color: black;
-    min-height: 60vh;
     display: flex;
+    height: 600px;
     margin: 0px 10px;
     min-width: 20vw;
+    border-radius: 10px;
     
 }
 
 .started {
     background-color: darkgray;
+    font-size: 20px;
+    padding-left: 20px;
+    padding-top: 20px;
 }
-
+.insideCard{
+    background-color: white;
+    border-radius: 20px;
+    width: 200px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 .inProgress {
     background-color: yellow;
+    font-size: 20px;
+    padding-left: 20px;
+    padding-top: 20px;
 }
 
 .done {
-    background-color: green;
+    background-color: rgba(7, 180, 7, 0.922);
+    font-size: 20px;
+    padding-left: 20px;
+    padding-top: 20px;
 }
