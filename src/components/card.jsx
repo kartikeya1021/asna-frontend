@@ -1,12 +1,12 @@
 import React from "react";
 
-export default function Card({ card, type, editCard }) {
+export default function Card({ card, type, editCard, columnId }) {
   return (
     <div
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("cardid", card.id);
-        e.dataTransfer.setData("source", type);
+        e.dataTransfer.setData("source", columnId);
       }}
       className="card"
     >
@@ -44,11 +44,10 @@ export default function Card({ card, type, editCard }) {
             )
           }
         />
-       
-      ):card?.description}
-       <p>
-            {new Date(card.date).toDateString()}
-        </p>
+      ) : (
+        card?.description
+      )}
+      <p>{new Date(card.date).toDateString()}</p>
       <i
         onClick={() =>
           editCard(
@@ -62,7 +61,6 @@ export default function Card({ card, type, editCard }) {
         }
         class="fa-solid fa-pen-to-square edit-icon"
       ></i>
-
     </div>
   );
 }
