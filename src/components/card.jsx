@@ -44,7 +44,11 @@ export default function Card({ card, type, editCard }) {
             )
           }
         />
+       
       ):card?.description}
+       <p>
+            {new Date(card.date).toDateString()}
+        </p>
       <i
         onClick={() =>
           editCard(
@@ -58,6 +62,7 @@ export default function Card({ card, type, editCard }) {
         }
         class="fa-solid fa-pen-to-square edit-icon"
       ></i>
+
     </div>
   );
 }

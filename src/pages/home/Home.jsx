@@ -6,14 +6,11 @@ export default function Home() {
   const [data, setData] = useState(
     localStorage.getItem("userData")
       ? JSON.parse(localStorage.getItem("userData"))
-      : {
-          started: [
-          ],
-          inProgress: [],
-          done: [],
-        }
+      : {}
   );
-
+  const [columnName, setColumnName] = useState();
+  const [currentlyEditing, setCurrentlyEditing] = useState();
+  const [currentColumnName, setCurrentColumnName] = useState();
   const [taskDetail, setTaskDetail] = useState({
     taskName: "Untitled",
     status: "",
@@ -21,32 +18,16 @@ export default function Home() {
     description: "Add a description",
     currentlyEditing: false,
   });
+
   const addTask = (type) => {
-    if (type == "started") {
-      var dataCopy = { ...data };
-      dataCopy.started.push({
-        ...taskDetail,
-        status: type,
-        id: Math.random(),
-      });
-      setData(dataCopy);
-    } else if (type == "inProgress") {
-      var dataCopy = { ...data };
-      dataCopy.inProgress.push({
-        ...taskDetail,
-        status: type,
-        id: Math.random(),
-      });
-      setData(dataCopy);
-    } else if (type == "done") {
-      var dataCopy = { ...data };
-      dataCopy.done.push({
-        ...taskDetail,
-        status: type,
-        id: Math.random(),
-      });
-      setData(dataCopy);
-    }
+    var dataCopy = { ...data };
+    dataCopy[type].push({
+      ...taskDetail,
+      status: type,
+      id: Math.random(),
+      currentlyEditing: false,
+    });
+    setData(dataCopy);
   };
   const moveCard = (e) => {
     var endStatus = e.target.className;
@@ -57,6 +38,7 @@ export default function Home() {
     var foundedCardIndex = dataCopy[sourceStatus].findIndex(
       (card) => card?.id == cardId
     );
+    /* console.log(sourceStatus,endStatus,cardId) */
     var newCard = dataCopy[sourceStatus][foundedCardIndex];
     delete dataCopy[sourceStatus][foundedCardIndex];
     dataCopy[endStatus].push(newCard);
@@ -71,13 +53,31 @@ export default function Home() {
     dataCopy[type][foundedCardIndex] = newCardData;
     setData(dataCopy);
   };
-  useEffect(() => {
+
+  const addColoumn = () => {
+    if (!columnName) return;
+
+    var dataCopy = { ...data };
+    dataCopy[columnName] = [];
+    setData(dataCopy);
+    setColumnName("");
+  };
+
+  const editColumnName = (columnName_) => {
+    var dataCopy = { ...data };
+    var keyCopy = dataCopy[columnName_];
+    delete dataCopy[columnName_];
+    dataCopy[columnName] = keyCopy;
+    setData(dataCopy);
+  };
+
+  /* useEffect(() => {
     localStorage.setItem("userData", JSON.stringify(data));
-  }, [data]);
+  }, [data]); */
 
   return (
     <div>
-         <button
+      <button
         onClick={() => {
           localStorage.clear();
           window.location.reload();
@@ -85,53 +85,60 @@ export default function Home() {
       >
         Clear
       </button>
+      <div>
+        <input
+          type="text"
+          value={columnName}
+          onChange={(e) => setColumnName(e.target.value)}
+        />
+        <button
+          className="card button"
+          onClick={() => {
+            if (currentlyEditing) {
+              editColumnName(currentColumnName);
+              setCurrentlyEditing(false);
+              setColumnName("");
+              return;
+            } else {
+              addColoumn();
+            }
+          }}
+        >
+          {""}
+          {currentlyEditing ? "Update Column" : "+ Add Section"}
+        </button>
+      </div>
       <div className="wrapper">
-     
-     <div
-       className="started container"
-       onDrop={moveCard}
-       onDragOver={(e) => {
-         e.preventDefault();
-       }}
-     >
-       {data.started.map((card) => (
-         <Card card={card} type={"started"} editCard={editCard} />
-       ))}
-       <button onClick={() => addTask("started")} className="card button">
-         + Add Card{" "}
-       </button>
-     </div>
-
-     <div
-       className="inProgress container"
-       onDrop={moveCard}
-       onDragOver={(e) => {
-         e.preventDefault();
-       }}
-     >
-       {data.inProgress.map((card) => (
-         <Card card={card} type={"inProgress"} editCard={editCard} />
-       ))}
-       <button onClick={() => addTask("inProgress")} className="card button">
-         + Add Card{" "}
-       </button>
-     </div>
-     <div
-       className="done container"
-       onDrop={moveCard}
-       onDragOver={(e) => {
-         e.preventDefault();
-       }}
-     >
-       {data.done.map((card) => (
-         <Card card={card} type={"done"} editCard={editCard} />
-       ))}
-       <button onClick={() => addTask("done")} className="card button">
-         + Add Card{" "}
-       </button>
-     </div>
-   </div>
+        {Object.keys(data).map((key) => (
+          <div>
+            <div className="col-row">
+              <h2>{key}</h2>
+              <i
+                onClick={() => {
+                  setCurrentlyEditing(!currentlyEditing);
+                  setCurrentColumnName(key);
+                  setColumnName(key);
+                }}
+                class="fa-solid fa-pen-to-square "
+              ></i>
+            </div>
+            <div
+              className={`${key} container`}
+              onDrop={moveCard}
+              onDragOver={(e) => {
+                e.preventDefault();
+              }}
+            >
+              {data[key].map((card) => (
+                <Card card={card} type={key} editCard={editCard} />
+              ))}
+              <button onClick={() => addTask(key)} className="card button">
+                + Add Card{" "}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-   
   );
 }
