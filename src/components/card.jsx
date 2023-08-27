@@ -27,11 +27,38 @@ export default function Card({ card, type, editCard, columnId }) {
                     <div className="BoardCardLayout-projectPills"></div>
                     <div className="BoardCardLayout-parentTask"></div>
                     <div className="BoardCardLayout-titleAndIndicator">
-                      <span className="BoardCardLayout-title--indented BoardCardLayout-title">
-                        <span className="Typography Typography--m BoardCard-taskName">
-                          {card.taskName}
+                      {card.isCurrentlyEditing ? (
+                        <input
+                          onChange={(e) =>
+                            editCard(card.id, {
+                              ...card,
+                              taskName: e.target.value,
+                            })
+                          }
+                          value={card.taskName}
+                          placeholder="Enter Task name Here"
+                          onBlur={() =>
+                            editCard(card.id, {
+                              ...card,
+                              isCurrentlyEditing: false,
+                            })
+                          }
+                        />
+                      ) : (
+                        <span
+                          onClick={() => {
+                            editCard(card.id, {
+                              ...card,
+                              isCurrentlyEditing: true,
+                            });
+                          }}
+                          className="BoardCardLayout-title--indented BoardCardLayout-title"
+                        >
+                          <span className="Typography Typography--m BoardCard-taskName">
+                            {card.taskName}
+                          </span>
                         </span>
-                      </span>
+                      )}
                       <div className="BoardCardLayout-completionIndicator">
                         <div
                           aria-checked="false"
@@ -61,11 +88,11 @@ export default function Card({ card, type, editCard, columnId }) {
                     </div>
                     <div className="BoardCardLayout-customPropertiesAndTags">
                       <div className="BoardCardCustomPropertiesAndTags">
-                        <div className="BoardCardCustomPropertiesAndTags-cellWrapper">
+                        {/* <div className="BoardCardCustomPropertiesAndTags-cellWrapper">
                           <div className="Pill--truncated Pill--colorYellowOrange Pill Pill--medium">
                            {card.description}
                           </div>
-                        </div>
+                        </div> */}
                         {/* <div className="BoardCardCustomPropertiesAndTags-cellWrapper">
                           <div className="Pill--truncated Pill--colorYellow Pill Pill--medium">
                             At risk
@@ -74,7 +101,7 @@ export default function Card({ card, type, editCard, columnId }) {
                       </div>
                     </div>
                     <div className="BoardCardLayout-assigneeDueDateActions">
-                     {/*  <div className="BoardCardLayout--alwaysShowAssignee BoardCardLayout-assignee">
+                      {/*  <div className="BoardCardLayout--alwaysShowAssignee BoardCardLayout-assignee">
                         <div
                           aria-label="Toggle assignee popover"
                           className="AvatarButton--standardTheme AvatarButton AvatarButton--sizeSmall DomainUserAvatarButton BoardCard-assignee BoardCard--alwaysVisible BoardCard--boardsRevampEnabled"
@@ -103,7 +130,9 @@ export default function Card({ card, type, editCard, columnId }) {
                             tabIndex={0}
                           >
                             <div className="DueDate--leftAligned DueDate--canWrap DueDate DueDateContainer-dueDate DueDate--future">
-                              <span className="DueDate-dateSpan">{new Date(card.date).getHours()}</span>
+                              <span className="DueDate-dateSpan">
+                                {new Date(card.date).getHours()}
+                              </span>
                             </div>
                           </div>
                         </div>
