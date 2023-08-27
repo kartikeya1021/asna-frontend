@@ -87,3 +87,7 @@
 .BoardCardLayout-titleAndIndicator input{
     margin-left: 30px;
 }
+
+.SpreadsheetGridScroller-container{
+min-height: 100vh !important;
+}
