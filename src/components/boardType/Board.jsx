@@ -72,7 +72,7 @@ export default function Board({
                                     addColoumn();
                                   }
                                 }}
-                                // className="BoardNewColumn BoardBody-column"
+                                
                               />
                             ) : (
                               <h3 className="Typography Typography--colorDefault Typography--overflowTruncate Typography--h5 Typography--fontWeightMedium BoardColumnHeaderTitle BoardColumnHeader-name">

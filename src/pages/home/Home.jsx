@@ -880,6 +880,8 @@ export default function Home() {
           setIsCurrentlyAddingColumn={setIsCurrentlyAddingColumn}
           newColumnName={newColumnName}
           isCurrentlyAddingColumn={isCurrentlyAddingColumn}
+          setCurrentColumnName={setNewColumnName}
+          currentColumnName={newColumnName}
         />
       ) : null}
     </div>
