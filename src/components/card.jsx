@@ -29,6 +29,7 @@ export default function Card({ card, type, editCard, columnId }) {
                     <div className="BoardCardLayout-titleAndIndicator">
                       {card.isCurrentlyEditing ? (
                         <input
+                          ref={(ref) => ref && ref.focus()}
                           onChange={(e) =>
                             editCard(card.id, {
                               ...card,
@@ -37,6 +38,7 @@ export default function Card({ card, type, editCard, columnId }) {
                           }
                           value={card.taskName}
                           placeholder="Enter Task name Here"
+                          className="cardInput"
                           onBlur={() =>
                             editCard(card.id, {
                               ...card,

@@ -406,7 +406,7 @@ export default function Table({
                       <div className="TaskGroup">
                         <div className="SortableList TaskGroup-subgroups TaskGroup-subgroups--sortable">
                           <div className="SortableList-itemContainer SortableList-itemContainer--column">
-                            <div className="SortableItem SortableList-sortableItem">
+                            {data.map(column =><div className="SortableItem SortableList-sortableItem">
                               <div className="TaskGroup--withHeader TaskGroup">
                                 <div className="DropTargetTaskGroupHeader">
                                   <div className="DropTargetTaskGroupHeader-child TaskGroup-headerDragSource">
@@ -445,9 +445,10 @@ export default function Table({
                                         >
                                           <div className="PotColumnName">
                                             <button className="PotColumnName-nameButton">
-                                              Untitled section
+                                              {column.columnName}
                                             </button>
                                             <div
+                                            onClick={()=>addTask(column.id)}
                                               aria-label="Add a task to this section"
                                               className="ThemeableIconButtonPresentation--isEnabled ThemeableIconButtonPresentation ThemeableIconButtonPresentation--medium SubtleIconButton--standardTheme SubtleIconButton PotColumnName-addTaskButton PotColumnName-addTaskOnClickButton"
                                               role="button"
@@ -514,7 +515,7 @@ export default function Table({
                                       Status
                                     </span>
                                   </div>
-                                  <div className="DropTargetRow--inSpreadsheetGrid DropTargetRow ProjectSpreadsheetGridRow-dropTargetRow">
+                                  {column.cards.map(card=><div className="DropTargetRow--inSpreadsheetGrid DropTargetRow ProjectSpreadsheetGridRow-dropTargetRow">
                                     <div>
                                       <div className="ContextMenuTarget-contextMenuEventListener SpreadsheetTaskRow-RootTaskContextMenuTarget">
                                         <div>
@@ -586,7 +587,7 @@ export default function Table({
                                                     className="SpreadsheetTaskName-shadow"
                                                     aria-hidden="true"
                                                   >
-                                                    asdasdasdasdas
+                                                    {card.taskName}
                                                   </div>
                                                   <textarea
                                                     id="Pot.1205343526438001_1205358966417419_1205359926801970"
@@ -598,8 +599,9 @@ export default function Table({
                                                     style={{
                                                       whiteSpace: "pre",
                                                     }}
+                                                    value={card.taskName}
                                                     defaultValue={
-                                                      "asdasdasdasdas"
+                                                      card.taskName
                                                     }
                                                   />
                                                 </label>
@@ -790,8 +792,8 @@ export default function Table({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div className="DropTargetRow--inSpreadsheetGrid DropTargetRow ProjectSpreadsheetGridRow-dropTargetRow">
+                                  </div>)}
+                                  {/* <div className="DropTargetRow--inSpreadsheetGrid DropTargetRow ProjectSpreadsheetGridRow-dropTargetRow">
                                     <div>
                                       <div className="ContextMenuTarget-contextMenuEventListener SpreadsheetTaskRow-RootTaskContextMenuTarget">
                                         <div>
@@ -1062,9 +1064,10 @@ export default function Table({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                   <div
                                     role="row"
+                                   
                                     className="SpreadsheetRow SpreadsheetRow--enabled ProjectSpreadsheetAddTaskAndAggregationRow ProjectSpreadsheetAddTaskAndAggregationRow--canAddTask"
                                   >
                                     <div
@@ -1072,6 +1075,7 @@ export default function Table({
                                       style={{
                                         width: 425,
                                         background: "transparent",
+                                        marginLeft:30
                                       }}
                                     >
                                       <div
@@ -1088,6 +1092,7 @@ export default function Table({
                                           as="span"
                                           role="button"
                                           tabIndex={0}
+                                          onClick={()=>addTask(column.id)}
                                         >
                                           <div className="Typography Typography--colorDarkGray1 Typography--m">
                                             Add task…
@@ -1118,8 +1123,8 @@ export default function Table({
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="SortableItem SortableList-sortableItem">
+                            </div>)}
+                           {/*  <div className="SortableItem SortableList-sortableItem">
                               <div className="TaskGroup--withHeader TaskGroup">
                                 <div className="DropTargetTaskGroupHeader">
                                   <div className="DropTargetTaskGroupHeader-child TaskGroup-headerDragSource">
@@ -1702,16 +1707,17 @@ export default function Table({
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div
+                    {/* <div
                       className="ItemListAddSectionButton--xlarge ItemListAddSectionButton SpreadsheetPotGridContents-addSectionButton"
                       as="div"
                       role="button"
                       tabIndex={0}
+                      onClick={()=>addColoumn()}
                     >
                       <svg
                         className="Icon ItemListAddSectionButton-plusIcon PlusIcon"
@@ -1722,7 +1728,47 @@ export default function Table({
                         <path d="M26,14h-8V6c0-1.1-0.9-2-2-2l0,0c-1.1,0-2,0.9-2,2v8H6c-1.1,0-2,0.9-2,2l0,0c0,1.1,0.9,2,2,2h8v8c0,1.1,0.9,2,2,2l0,0c1.1,0,2-0.9,2-2v-8h8c1.1,0,2-0.9,2-2l0,0C28,14.9,27.1,14,26,14z" />
                       </svg>
                       Add section
-                    </div>
+                    </div> */}
+                    {isCurrentlyAddingColumn ? (
+                      <input
+                        ref={(ref) => ref && ref.focus()}
+                        type="text"
+                        value={newColumnName}
+                        onChange={(e) => setNewColumnName(e.target.value)}
+                        placeholder="Enter Section Name"
+                        onBlur={() => {
+                          if (newColumnName != "" && newColumnName) {
+                            addColoumn();
+                          } else {
+                            setNewColumnName("");
+                            setIsCurrentlyAddingColumn();
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key == "Enter") addColoumn();
+                        }}
+                        className="ItemListAddSectionButton--xlarge ItemListAddSectionButton SpreadsheetPotGridContents-addSectionButton"
+                      />
+                    ) : (
+                      <div
+                      className="ItemListAddSectionButton--xlarge ItemListAddSectionButton SpreadsheetPotGridContents-addSectionButton"
+                        as="div"
+                        role="button"
+                        tabIndex={0}
+                    
+                        onClick={() => setIsCurrentlyAddingColumn(true)}
+                      >
+                        <svg
+                          className="Icon ItemListAddSectionButton-plusIcon PlusIcon"
+                          viewBox="0 0 32 32"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="M26,14h-8V6c0-1.1-0.9-2-2-2l0,0c-1.1,0-2,0.9-2,2v8H6c-1.1,0-2,0.9-2,2l0,0c0,1.1,0.9,2,2,2h8v8c0,1.1,0.9,2,2,2l0,0c1.1,0,2-0.9,2-2v-8h8c1.1,0,2-0.9,2-2l0,0C28,14.9,27.1,14,26,14z"></path>
+                        </svg>
+                        Add section
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -565,8 +565,7 @@ export default function Home() {
                         <div className="PotTabNavigationBarItemWithMenu-linkAndMenuContainer--isSelected PotTabNavigationBarItemWithMenu-linkAndMenuContainer--isClickable PotTabNavigationBarItemWithMenu-linkAndMenuContainer--hasDropdownButton PotTabNavigationBarItemWithMenu-linkAndMenuContainer">
                           <a
                             aria-current="true"
-                            onClick={()=>setBoardType('table')}
-
+                            onClick={() => setBoardType("table")}
                             className="PotTabNavigationBarItemWithMenu-link--isSelected PotTabNavigationBarItemWithMenu-link BaseLink"
                           >
                             <span className="PotTabNavigationBarItemWithMenu-selectableTabContainer">
@@ -610,7 +609,7 @@ export default function Home() {
                         <div className="PotTabNavigationBarItemWithMenu-linkAndMenuContainer--isClickable PotTabNavigationBarItemWithMenu-linkAndMenuContainer--hasDropdownButton PotTabNavigationBarItemWithMenu-linkAndMenuContainer">
                           <a
                             aria-current="false"
-                           onClick={()=>setBoardType('board')}
+                            onClick={() => setBoardType("board")}
                             className="PotTabNavigationBarItemWithMenu-link BaseLink"
                           >
                             <span className="PotTabNavigationBarItemWithMenu-selectableTabContainer">
@@ -860,6 +859,7 @@ export default function Home() {
           isColumnDropDownOpen={isColumnDropDownOpen}
           setIsCurrentlyAddingColumn={setIsCurrentlyAddingColumn}
           newColumnName={newColumnName}
+          isCurrentlyAddingColumn={isCurrentlyAddingColumn}
         />
       ) : boardType == "table" ? (
         <Table
@@ -879,6 +879,7 @@ export default function Home() {
           isColumnDropDownOpen={isColumnDropDownOpen}
           setIsCurrentlyAddingColumn={setIsCurrentlyAddingColumn}
           newColumnName={newColumnName}
+          isCurrentlyAddingColumn={isCurrentlyAddingColumn}
         />
       ) : null}
     </div>

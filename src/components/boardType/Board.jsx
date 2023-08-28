@@ -19,8 +19,7 @@ export default function Board({
   editCard,
   isCurrentlyAddingColumn,
   setIsCurrentlyAddingColumn,
-  newColumnName
-  
+  newColumnName,
 }) {
   return (
     <div
@@ -148,6 +147,7 @@ export default function Board({
                               >
                                 {cards.map((card) => (
                                   <Card
+
                                     card={card}
                                     type={columnName}
                                     editCard={(cardId, newCardData) =>
@@ -194,12 +194,23 @@ export default function Board({
                   <h3 className="Typography Typography--colorDefault Typography--overflowTruncate Typography--h5 Typography--fontWeightMedium BoardColumnHeaderTitle BoardNewColumn-addColumn">
                     {isCurrentlyAddingColumn ? (
                       <input
+                        ref={(ref) => ref && ref.focus()}
                         type="text"
                         value={newColumnName}
                         onChange={(e) => setNewColumnName(e.target.value)}
-                        placeholder="Enter Task Name"
-                        onBlur={() => addColoumn()}
-                        className="BoardNewColumn BoardBody-column"
+                        placeholder="Enter Section Name"
+                        onBlur={() => {
+                          if (newColumnName != "" && newColumnName) {
+                            addColoumn();
+                          } else {
+                            setNewColumnName("");
+                            setIsCurrentlyAddingColumn();
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key == "Enter") addColoumn();
+                        }}
+                        className="BoardNewColumn BoardBody-column newColumnNameInput"
                       />
                     ) : (
                       <div
@@ -207,15 +218,7 @@ export default function Board({
                         as="div"
                         role="button"
                         tabIndex={0}
-                        // onClick={() => {
-                        //   if (currentlyEditing) {
-                        //     editColumnName(currentColumnName);
-                        //     setCurrentlyEditing(false);
-                        //     return;
-                        //   } else {
-                        //     addColoumn();
-                        //   }
-                        // }}
+                    
                         onClick={() => setIsCurrentlyAddingColumn(true)}
                       >
                         <svg
