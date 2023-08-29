@@ -1,7 +1,8 @@
 import React from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DatePicker, MobileDatePicker } from "@mui/x-date-pickers";
+import InputAdornment from "@mui/material/InputAdornment";
 export default function Table({
   data,
   currentlyEditing,
@@ -23,6 +24,7 @@ export default function Table({
   setCurrentColumnName,
   currentColumnName,
 }) {
+  const dateRef = React.useRef();
   return (
     <div className="PotListPage ProjectPage-listInner">
       <div className="FullWidthPageStructureWithDetailsOverlay PotListPageContent">
@@ -656,12 +658,13 @@ export default function Table({
                                                         {card.taskName}
                                                       </div>
                                                       <textarea
-                                                        id="Pot.1205343526438001_1205358966417419_1205359926801970"
+                                                        id={card.id}
                                                         className="SpreadsheetTaskName-input override-focus-border override-hover-border"
                                                         placeholder=""
                                                         rows={1}
-                                                        tabIndex={0}
+                                                        tabIndex={card.id}
                                                         wrap="off"
+                                                        value={card.taskName}
                                                         style={{
                                                           whiteSpace: "pre",
                                                         }}
@@ -686,10 +689,8 @@ export default function Table({
                                                             column.id
                                                           )
                                                         }
-                                                        value={card.taskName}
-                                                        defaultValue={
-                                                          card.taskName
-                                                        }
+                                                      /*   value={card.taskName} */
+                                                        
                                                       />
                                                     </label>
                                                     <div className="SpreadsheetGridTaskNameAndDetailsCellGroup-detailsButtonClickArea">
@@ -785,6 +786,112 @@ export default function Table({
                                                     style={{ width: 120 }}
                                                   >
                                                     <div
+                                                      class="SpreadsheetMutableDateCell--isAlwaysVisible SpreadsheetMutableDateCell"
+                                                      tabindex="0"
+                                                    >
+                                                      <div class="SpreadsheetMutableDateCell-dueDateDisplay">
+                                                        <div class="DueDateWithRecurrence--xsmall DueDateWithRecurrence DueDateWithRecurrence--past SpreadsheetMutableDateCell-dueDateWithRecurrence">
+                                                          <div
+                                                            onClick={() =>
+                                                              editCard(
+                                                                card.id,
+                                                                {
+                                                                  ...card,
+                                                                  isDateModalOpen: true,
+                                                                },
+                                                                column.id
+                                                              )
+                                                            }
+                                                            class="DueDate--canWrap DueDate DueDateWithRecurrence-dueDate DueDate--past"
+                                                          >
+                                                            <span class="DueDate-dateSpan">
+                                                              {new Date(
+                                                                card.deadLine
+                                                              ).toDateString()}
+                                                            </span>
+                                                          </div>
+                                                        </div>
+                                                        <LocalizationProvider
+                                                          dateAdapter={
+                                                            AdapterDayjs
+                                                          }
+                                                        >
+                                                          {card.isDateModalOpen && (
+                                                            <MobileDatePicker
+                                                              onChange={(e) => {
+                                                                editCard(
+                                                                  card.id,
+                                                                  {
+                                                                    ...card,
+                                                                    deadLine:
+                                                                      new Date(
+                                                                        e
+                                                                      ),
+                                                                    isDateModalOpen: false,
+                                                                  },
+                                                                  column.id
+                                                                );
+                                                              }}
+                                                              open={true}
+                                                              /* value={
+                                                                new Date(
+                                                                  card.deadLine
+                                                                )
+                                                              } */
+                                                              renderInput={(
+                                                                params
+                                                              ) => (
+                                                                <div
+                                                                  {...params}
+                                                                />
+                                                              )}
+                                                            />
+                                                          )}
+                                                          {/*  <DatePicker
+                                                            ref={dateRef}
+                                                            renderInput={(params) => <InputAdornment position="end" {...params} />}
+                                                            onChange={(e) => {
+                                                              editCard(
+                                                                card.id,
+                                                                {
+                                                                  ...card,
+                                                                  deadLine:
+                                                                    e.target
+                                                                      .value,
+                                                                },
+                                                                column.id
+                                                              );
+                                                            }}
+                                                          /> */}
+                                                        </LocalizationProvider>
+                                                        {/*  <DatePicker
+                                                          value={card.deadLine}
+                                                          onChange={(e) => {
+                                                            editCard(
+                                                              card.id,
+                                                              {
+                                                                ...card,
+                                                                deadLine:
+                                                                  e.target
+                                                                    .value,
+                                                              },
+                                                              column.id
+                                                            );
+                                                          }}
+                                                        />
+ */}
+                                                        {/*  <div class="DueDateWithRecurrence--xsmall DueDateWithRecurrence DueDateWithRecurrence--past SpreadsheetMutableDateCell-dueDateWithRecurrence">
+                                                          <div class="DueDate--canWrap DueDate DueDateWithRecurrence-dueDate DueDate--past">
+                                                            <span class="DueDate-dateSpan">
+                                                              {new Date(
+                                                                card.deadLine
+                                                              ).toDateString()}
+                                                            </span>
+                                                          </div>
+                                                        </div> */}
+                                                      </div>
+                                                    </div>
+                                                    {/*  <div
                                                       className="SpreadsheetMutableDateCell"
                                                       tabIndex={0}
                                                     >
@@ -793,19 +900,12 @@ export default function Table({
                                                      
                                                         <div className="PlaceholderAvatar PlaceholderAvatar--small">
                                                          
-                                                         {/*  <LocalizationProvider
+                                                       <LocalizationProvider
                                                             dateAdapter={
                                                               AdapterDayjs
                                                             }
                                                           >
-                                                            <svg
-                                                              className="MiniIcon CalendarMiniIcon"
-                                                              viewBox="0 0 24 24"
-                                                              aria-hidden="true"
-                                                              focusable="false"
-                                                            >
-                                                              <path d="M19.1,2H18V1c0-0.6-0.4-1-1-1s-1,0.4-1,1v1H8V1c0-0.6-0.4-1-1-1S6,0.4,6,1v1H4.9C2.2,2,0,4.2,0,6.9v12.1  C0,21.8,2.2,24,4.9,24h14.1c2.7,0,4.9-2.2,4.9-4.9V6.9C24,4.2,21.8,2,19.1,2z M4.9,4H6v1c0,0.6,0.4,1,1,1s1-0.4,1-1V4h8v1  c0,0.6,0.4,1,1,1s1-0.4,1-1V4h1.1C20.7,4,22,5.3,22,6.9V8H2V6.9C2,5.3,3.3,4,4.9,4z M19.1,22H4.9C3.3,22,2,20.7,2,19.1V10h20v9.1  C22,20.7,20.7,22,19.1,22z" />
-                                                            </svg>
+                                                            
                                                             <DatePicker
                                                               value={
                                                                 card.deadLine
@@ -823,11 +923,11 @@ export default function Table({
                                                                 );
                                                               }}
                                                             />
-                                                          </LocalizationProvider> */}
-                                                          {/* */}
+                                                          </LocalizationProvider> 
+                                                        
                                                         </div>
                                                       </div>
-                                                    </div>
+                                                    </div> */}
                                                   </div>
                                                 </div>
                                                 <div className="ContextMenuTarget-contextMenuEventListener SpreadsheetTaskRow-FieldCellTaskContextMenuTarget">

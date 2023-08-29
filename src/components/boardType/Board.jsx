@@ -72,7 +72,6 @@ export default function Board({
                                     addColoumn();
                                   }
                                 }}
-                                
                               />
                             ) : (
                               <h3 className="Typography Typography--colorDefault Typography--overflowTruncate Typography--h5 Typography--fontWeightMedium BoardColumnHeaderTitle BoardColumnHeader-name">
@@ -147,12 +146,9 @@ export default function Board({
                               >
                                 {cards.map((card) => (
                                   <Card
-
                                     card={card}
                                     type={columnName}
-                                    editCard={(cardId, newCardData) =>
-                                      editCard(cardId, newCardData, id)
-                                    }
+                                    editCard={editCard}
                                     columnId={id}
                                   />
                                 ))}
@@ -218,7 +214,6 @@ export default function Board({
                         as="div"
                         role="button"
                         tabIndex={0}
-                    
                         onClick={() => setIsCurrentlyAddingColumn(true)}
                       >
                         <svg

@@ -28,7 +28,9 @@ export default function Home() {
     date: new Date(),
     description: "Add a description",
     currentlyEditing: false,
+    deadLine: new Date()
   });
+  console.log(data)
 
   const addTask = (id) => {
     var dataCopy = [...data];
@@ -36,8 +38,9 @@ export default function Home() {
     dataCopy[foundedColumnIndex].cards.push({
       ...taskDetail,
       status: dataCopy[foundedColumnIndex].columnName,
-      id: Math.random(),
+      id: dataCopy[foundedColumnIndex].cards.length+1,
       currentlyEditing: false,
+      deadLine: new Date()
     });
     setData(dataCopy);
   };
@@ -72,7 +75,7 @@ export default function Home() {
       (column) => column.id == columnId
     );
     var foundedCardIndex = dataCopy[foundedColumnIndex].cards.findIndex(
-      (card) => (card.id = cardId)
+      (card) => card.id == cardId
     );
     dataCopy[foundedColumnIndex].cards[foundedCardIndex] = newCardData;
     setData(dataCopy);
