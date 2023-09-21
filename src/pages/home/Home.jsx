@@ -1,21 +1,32 @@
-import { useEffect, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import React from "react";
 import "./home.css";
 import "./home.clone.css";
-import Card from "../../components/card";
-import DropDown from "../../components/DropDown";
+import { v4 as uuidv4 } from "uuid";
 import Board from "../../components/boardType/Board";
 import Table from "../../components/boardType/Table";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ProjectContext from "../../context/Project.context";
 
 export default function Home() {
-  const [data, setData] = useState([
-    {
-      columnName: "Todo",
-      id: 1,
-      cards: [],
-    },
-    { columnName: "Pending", id: 2, cards: [] },
-  ]);
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { projectData, setProjectData } = useContext(ProjectContext);
+  /* useEffect(() => {
+    let checkInLocalStorage = localStorage.getItem("projectData");
+    if (checkInLocalStorage) {
+      setProjectData(JSON.parse(checkInLocalStorage));
+    }
+  }, []); */
+  const [haveProjectId, setHaveProjectId] = useState(
+    id ? (projectData[id] ? true : false) : false
+  );
+
+  const [data, setData] = useState(projectData[id]?.data || []);
+  useEffect(() => {
+    setProjectData({ ...projectData, [id]: { ...projectData[id], data } });
+  }, [data]);
   const [boardType, setBoardType] = useState("board");
   const [newColumnName, setNewColumnName] = useState();
   const [currentlyEditing, setCurrentlyEditing] = useState();
@@ -28,9 +39,8 @@ export default function Home() {
     date: new Date(),
     description: "Add a description",
     currentlyEditing: false,
-    deadLine: new Date()
+    deadLine: new Date(),
   });
-  console.log(data)
 
   const addTask = (id) => {
     var dataCopy = [...data];
@@ -38,9 +48,9 @@ export default function Home() {
     dataCopy[foundedColumnIndex].cards.push({
       ...taskDetail,
       status: dataCopy[foundedColumnIndex].columnName,
-      id: dataCopy[foundedColumnIndex].cards.length+1,
+      id: dataCopy[foundedColumnIndex].cards.length + 1,
       currentlyEditing: false,
-      deadLine: new Date()
+      deadLine: new Date(),
     });
     setData(dataCopy);
   };
@@ -124,9 +134,33 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  /* useEffect(() => {
-    localStorage.setItem("userData", JSON.stringify(data));
-  }, [data]); */
+  const createBlankProject = () => {
+    let payload = {
+      projectName: "Untitled",
+      projectDescription: "This is unititle project",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      projectStatus: "active",
+      data: [],
+    };
+
+    var projectDataCopy = { ...projectData };
+    let id = uuidv4();
+    projectDataCopy[id] = payload;
+
+    setProjectData(projectDataCopy);
+    return id;
+  };
+  useEffect(() => {
+    if (!id) {
+      let id = createBlankProject();
+      navigate(`/project/${id}`);
+    }
+  }, [id, location.pathname]);
+  useEffect(() => {
+    setData(projectData[id]?.data || []);
+  }, [id]);
+
   return (
     <div>
       <div className="AsanaBaseTopbar AsanaBaseTopbar--withoutShadow AsanaBaseTopbar--zIndexIncluded">
@@ -144,7 +178,10 @@ export default function Home() {
                     <div className="ScreenReaderOnly">
                       Change color and icon of Cross-functional project plan
                     </div>
-                    <div className="ChipWithIcon--withChipFill ChipWithIcon--colorAqua ChipWithIcon">
+                    <div
+                      onClick={() => navigate("/")}
+                      className="ChipWithIcon--withChipFill ChipWithIcon--colorAqua ChipWithIcon"
+                    >
                       <svg
                         className="MultiColorIcon MultiColorIcon BoardMultiColorIcon MultiColorIcon--medium"
                         viewBox="0 0 24 24"
@@ -175,13 +212,24 @@ export default function Home() {
                           className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium ProjectPageHeaderProjectTitle-input"
                           type="text"
                           tabIndex={0}
-                          defaultValue="Cross-functional project plan"
+                          onChange={(e) => {
+                            var projectDataCopy = { ...projectData };
+                            projectDataCopy[id]["projectName"] = e.target.value;
+                            setProjectData(projectDataCopy);
+                          }}
+                          defaultValue={
+                            haveProjectId
+                              ? projectData[id].projectName
+                              : "Untitled"
+                          }
                         />
                         <div
                           className="ProjectPageHeaderProjectTitle-shadow"
                           aria-hidden="true"
                         >
-                          Cross-functional project plan
+                          {haveProjectId
+                            ? projectData[id].projectName
+                            : "Untitled"}
                         </div>
                       </div>
                     </h1>
