@@ -21,6 +21,7 @@ export default function Board({
   setIsCurrentlyAddingColumn,
   newColumnName,
 }) {
+  
   return (
     <div
       role="presentation"
@@ -32,9 +33,8 @@ export default function Board({
         <div className="DragSelectContainer">
           <div className="SortableList BoardBody-columnSortableList">
             <div className="SortableList-itemContainer SortableList-itemContainer--row">
-              {data
-                .sort((a, b) => a.id - b.id)
-                .map(({ columnName, id, cards }) => (
+              {data?.columns?.sort((a, b) => a.id - b.id)
+          ?.map(({ columnName, id, cards }) => (
                   <div
                     onDrop={(e) => {
                       if (e.dataTransfer.getData("cardId")) return null;
