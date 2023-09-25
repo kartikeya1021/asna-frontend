@@ -32,9 +32,9 @@ export default function Board({
         <div className="DragSelectContainer">
           <div className="SortableList BoardBody-columnSortableList">
             <div className="SortableList-itemContainer SortableList-itemContainer--row">
-              {data
+              {data?.columns
                 .sort((a, b) => a.id - b.id)
-                .map(({ columnName, id, cards }) => (
+                ?.map(({ columnName, id, cards }) => (
                   <div
                     onDrop={(e) => {
                       if (e.dataTransfer.getData("cardId")) return null;

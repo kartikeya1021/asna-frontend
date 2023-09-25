@@ -7,6 +7,8 @@ import Board from "../../components/boardType/Board";
 import Table from "../../components/boardType/Table";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProjectContext from "../../context/Project.context";
+import ProjectService from "../../service/project.service";
+import ColumnService from "../../service/column.service";
 
 export default function Home() {
   const { id } = useParams();
@@ -91,15 +93,22 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  const addColoumn = () => {
+  const addColoumn = async () => {
     if (!newColumnName) return;
-    var dataCopy = [...data];
-    var newColumn = {
-      columnName: newColumnName,
-      id: data.length + 1,
-      cards: [],
-    };
-    dataCopy.push(newColumn);
+    const result = await ColumnService.create({
+      name: newColumnName,
+      projectId: id,
+    });
+    if (result.status == 200) {
+      alert(result.data.message);
+    }
+    // var dataCopy = [...data];
+    // var newColumn = {
+    //   columnName: newColumnName,
+    //   id: data.length + 1,
+    //   cards: [],
+    // };
+    // dataCopy.push(newColumn);
     setData(dataCopy);
     setNewColumnName("");
     setIsCurrentlyAddingColumn();
@@ -114,13 +123,16 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  const editColumnName = (columnId) => {
-    var dataCopy = [...data];
-    var foundedColumnIndex = dataCopy.findIndex(
-      (column) => column.id == columnId
-    );
-    dataCopy[foundedColumnIndex].columnName = newColumnName;
-    setData(dataCopy);
+  const editColumnName = async (columnId) => {
+    if (!newColumnName) return;
+    await ColumnService.update(id, columnId, newColumnName);
+
+    // var dataCopy = [...data];
+    // var foundedColumnIndex = dataCopy.findIndex(
+    //   (column) => column.id == columnId
+    // );
+    // dataCopy[foundedColumnIndex].columnName = newColumnName;
+    // setData(dataCopy);
     setNewColumnName("");
     setCurrentColumnId();
   };
@@ -134,31 +146,40 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  const createBlankProject = () => {
-    let payload = {
-      projectName: "Untitled",
-      projectDescription: "This is unititle project",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      projectStatus: "active",
-      data: [],
-    };
-
-    var projectDataCopy = { ...projectData };
-    let id = uuidv4();
-    projectDataCopy[id] = payload;
-
-    setProjectData(projectDataCopy);
-    return id;
+  const createBlankProject = async () => {
+    const result = await ProjectService.create({
+      name: "Untitled",
+      description: "This is unititle project",
+    });
+    if (result.status == 200) {
+      let id = result.data.id;
+      const message = result.data.message;
+      alert(message);
+      return id;
+    }
   };
-  useEffect(() => {
+
+  const changeProjectName = async (e) => {
+    await ProjectService.update(id, {
+      name: e.target.value,
+    });
+  };
+  const getProjectById = async () => {
+    const result = await ProjectService.get(id);
+    if (result.status == 200) {
+      let data = result.data;
+      setData(data);
+    }
+  };
+  useEffect(async () => {
     if (!id) {
-      let id = createBlankProject();
+      let id = await createBlankProject();
       navigate(`/project/${id}`);
     }
   }, [id, location.pathname]);
   useEffect(() => {
-    setData(projectData[id]?.data || []);
+    // setData(projectData[id]?.data || []);
+    getProjectById();
   }, [id]);
 
   return (
@@ -212,11 +233,7 @@ export default function Home() {
                           className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium ProjectPageHeaderProjectTitle-input"
                           type="text"
                           tabIndex={0}
-                          onChange={(e) => {
-                            var projectDataCopy = { ...projectData };
-                            projectDataCopy[id]["projectName"] = e.target.value;
-                            setProjectData(projectDataCopy);
-                          }}
+                          onChange={changeProjectName}
                           defaultValue={
                             haveProjectId
                               ? projectData[id].projectName
