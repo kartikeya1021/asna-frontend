@@ -2,13 +2,13 @@ import api from "./api";
 
 const ProjectService = {
   create: (data) => {
-    return api.post("/project", data);
+    return api.post("/Project", data);
   },
-  update: (id, data) => {
-    return api.put(`/project/${id}`, data);
+  update: (data, id) => {
+    return api.put(`/Project/${id}`, data);
   },
   get: (id) => {
-    return api.get(`/project/${id}`);
+    return api.get(`/Project/${id}`);
   },
 };
 
