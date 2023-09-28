@@ -7,12 +7,12 @@ export default function Register() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [userName , setUserName] = React.useState("");
+  const [name , setName] = React.useState("");
 
   const handleSubmit = async (e) => {
-    const res  = await AuthenticationService.register(email,userName,password);
-    if(res.status === 200){
-        localStorage.setItem("isAuthenticated", true);
-        window.location.reload();
+    const res  = await AuthenticationService.register(email,userName,password,name);
+    if(res.status === 201){
+        window.location.href = "/";
         }
   }
   return (
@@ -79,6 +79,31 @@ export default function Register() {
               <span className="SeparatorRow-horizontalLine" />
             </span>
             <form className="LoginEmailForm" name="loginEmailForm">
+            <div className="FormRowStructure--labelPlacementTop FormRowStructure LoginEmailForm-email">
+                <div className="FormRowStructure-label">
+                  <label
+                    className="BaseLabel LabelPresentation"
+                    htmlFor="lui_72"
+                  >
+                    Name
+                  </label>
+                </div>
+                <div className="FormRowStructure-contents">
+                  <div className="ValidatedInput">
+                    <input 
+                    onChange={(e)=>setName(e.target.value)}
+                      type="text"
+                      className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium LoginEmailForm-emailInput"
+                      id="lui_72"
+                      name="e"
+                      defaultValue=""
+                      aria-required="true"
+                      autoComplete="email"
+                      autofocus=""
+                    />
+                  </div>
+                </div>
+              </div>
               <div className="FormRowStructure--labelPlacementTop FormRowStructure LoginEmailForm-email">
                 <div className="FormRowStructure-label">
                   <label

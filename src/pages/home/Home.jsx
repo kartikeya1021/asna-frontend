@@ -25,6 +25,8 @@ export default function Home() {
     id ? (projectData[id] ? true : false) : false
   );
 
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
+
   const [data, setData] = useState({});
   /* useEffect(() => {
     setProjectData({ ...projectData, [id]: { ...projectData[id], data } });
@@ -153,10 +155,10 @@ export default function Home() {
     }
   };
 
-  const changeProjectName = async (e) => {
+  const changeProjectName = async (name) => {
     await ProjectService.update(
       {
-        name: e.target.value,
+        name,
       },
       id
     );
@@ -231,7 +233,15 @@ export default function Home() {
                           className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium ProjectPageHeaderProjectTitle-input"
                           type="text"
                           tabIndex={0}
-                          onChange={changeProjectName}
+                          onBlur={changeProjectName}
+                          onKeyDown={(e) => {
+                            if (e.key == "Enter") {
+                              changeProjectName(data.name);
+                            }
+                          }}
+                          onChange={(e) => {
+                            setData({ ...data, name: e.target.value });
+                          }}
                           defaultValue={
                             data.name
                           }
@@ -828,7 +838,7 @@ export default function Home() {
                       aria-hidden="true"
                     >
                       <div className="AvatarPhoto-image" />
-                      Ay
+                      {userData?.name?.slice(0,2)}
                     </div>
                   </div>
                   <div

@@ -1,6 +1,6 @@
 import React from "react";
-import LoginService from "../../service/authenticaton.service";
 import Register from "./Register";
+import AuthenticationService from "../../service/authenticaton.service";
 
 
 export default function Login() {
@@ -8,8 +8,10 @@ export default function Login() {
   const [password, setPassword] = React.useState("");
 
   const handleSubmit = async (e) => {
-    const res  = await LoginService.login(email, password);
+    const res  = await AuthenticationService.login(email, password);
     if(res.status === 200){
+      localStorage.setItem("userData", JSON.stringify(res.data.content.data));
+      localStorage.setItem("token", res.data.content.meta.AccessToken);
         localStorage.setItem("isAuthenticated", true);
         window.location.reload();
         }
