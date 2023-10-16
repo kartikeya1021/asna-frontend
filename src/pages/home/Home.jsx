@@ -1,21 +1,36 @@
-import { useEffect, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import React from "react";
 import "./home.css";
 import "./home.clone.css";
-import Card from "../../components/card";
-import DropDown from "../../components/DropDown";
+import { v4 as uuidv4 } from "uuid";
 import Board from "../../components/boardType/Board";
 import Table from "../../components/boardType/Table";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ProjectContext from "../../context/Project.context";
+import ProjectService from "../../service/project.service";
+import ColumnService from "../../service/column.service";
 
 export default function Home() {
-  const [data, setData] = useState([
-    {
-      columnName: "Todo",
-      id: 1,
-      cards: [],
-    },
-    { columnName: "Pending", id: 2, cards: [] },
-  ]);
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { projectData, setProjectData } = useContext(ProjectContext);
+  /* useEffect(() => {
+    let checkInLocalStorage = localStorage.getItem("projectData");
+    if (checkInLocalStorage) {
+      setProjectData(JSON.parse(checkInLocalStorage));
+    }
+  }, []); */
+  const [haveProjectId, setHaveProjectId] = useState(
+    id ? (projectData[id] ? true : false) : false
+  );
+
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
+
+  const [data, setData] = useState({});
+  /* useEffect(() => {
+    setProjectData({ ...projectData, [id]: { ...projectData[id], data } });
+  }, [data]); */
   const [boardType, setBoardType] = useState("board");
   const [newColumnName, setNewColumnName] = useState();
   const [currentlyEditing, setCurrentlyEditing] = useState();
@@ -28,6 +43,7 @@ export default function Home() {
     date: new Date(),
     description: "Add a description",
     currentlyEditing: false,
+    deadLine: new Date(),
   });
 
   const addTask = (id) => {
@@ -36,8 +52,9 @@ export default function Home() {
     dataCopy[foundedColumnIndex].cards.push({
       ...taskDetail,
       status: dataCopy[foundedColumnIndex].columnName,
-      id: Math.random(),
+      id: dataCopy[foundedColumnIndex].cards.length + 1,
       currentlyEditing: false,
+      deadLine: new Date(),
     });
     setData(dataCopy);
   };
@@ -72,21 +89,28 @@ export default function Home() {
       (column) => column.id == columnId
     );
     var foundedCardIndex = dataCopy[foundedColumnIndex].cards.findIndex(
-      (card) => (card.id = cardId)
+      (card) => card.id == cardId
     );
     dataCopy[foundedColumnIndex].cards[foundedCardIndex] = newCardData;
     setData(dataCopy);
   };
 
-  const addColoumn = () => {
+  const addColoumn = async () => {
     if (!newColumnName) return;
-    var dataCopy = [...data];
+    const result = await ColumnService.create({
+      name: newColumnName,
+      projectId: id,
+    });
+    if (result.status == 200) {
+      alert(result.data.message);
+    }
+    /* var dataCopy = [...data];
     var newColumn = {
       columnName: newColumnName,
       id: data.length + 1,
       cards: [],
     };
-    dataCopy.push(newColumn);
+    dataCopy.push(newColumn); */
     setData(dataCopy);
     setNewColumnName("");
     setIsCurrentlyAddingColumn();
@@ -101,13 +125,10 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  const editColumnName = (columnId) => {
-    var dataCopy = [...data];
-    var foundedColumnIndex = dataCopy.findIndex(
-      (column) => column.id == columnId
-    );
-    dataCopy[foundedColumnIndex].columnName = newColumnName;
-    setData(dataCopy);
+  const editColumnName = async (columnId) => {
+    if (!newColumnName) return;
+    await ColumnService.update(id, columnId, newColumnName);
+
     setNewColumnName("");
     setCurrentColumnId();
   };
@@ -121,9 +142,46 @@ export default function Home() {
     setData(dataCopy);
   };
 
-  /* useEffect(() => {
-    localStorage.setItem("userData", JSON.stringify(data));
-  }, [data]); */
+  const createBlankProject = async () => {
+    const result = await ProjectService.create({
+      name: "Untitled",
+      description: "This is unititle project",
+    });
+    if (result.status == 200) {
+      let id = result.data.id;
+      const message = result.data.message;
+      alert(message);
+      return id;
+    }
+  };
+
+  const changeProjectName = async (name) => {
+    await ProjectService.update(
+      {
+        name,
+      },
+      id
+    );
+  };
+  const getProjectById = async () => {
+    const result = await ProjectService.get(id);
+    if (result.status == 200) {
+      let data = result.data;
+      console.log(data)
+      setData(data);
+    }
+  }
+  useEffect(async () => {
+    if (!id) {
+      let id = await createBlankProject();
+      navigate(`/project/${id}`);
+    }
+  }, [id, location.pathname]);
+  useEffect(() => {
+   /*  setData(projectData[id]?.data || []); */ 
+   getProjectById();
+  }, [id]);
+
   return (
     <div>
       <div className="AsanaBaseTopbar AsanaBaseTopbar--withoutShadow AsanaBaseTopbar--zIndexIncluded">
@@ -141,7 +199,10 @@ export default function Home() {
                     <div className="ScreenReaderOnly">
                       Change color and icon of Cross-functional project plan
                     </div>
-                    <div className="ChipWithIcon--withChipFill ChipWithIcon--colorAqua ChipWithIcon">
+                    <div
+                      onClick={() => navigate("/")}
+                      className="ChipWithIcon--withChipFill ChipWithIcon--colorAqua ChipWithIcon"
+                    >
                       <svg
                         className="MultiColorIcon MultiColorIcon BoardMultiColorIcon MultiColorIcon--medium"
                         viewBox="0 0 24 24"
@@ -172,13 +233,26 @@ export default function Home() {
                           className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium ProjectPageHeaderProjectTitle-input"
                           type="text"
                           tabIndex={0}
-                          defaultValue="Cross-functional project plan"
+                          onBlur={changeProjectName}
+                          onKeyDown={(e) => {
+                            if (e.key == "Enter") {
+                              changeProjectName(data.name);
+                            }
+                          }}
+                          onChange={(e) => {
+                            setData({ ...data, name: e.target.value });
+                          }}
+                          defaultValue={
+                            data.name
+                          }
                         />
                         <div
                           className="ProjectPageHeaderProjectTitle-shadow"
                           aria-hidden="true"
                         >
-                          Cross-functional project plan
+                          {
+                            data.name
+                          }
                         </div>
                       </div>
                     </h1>
@@ -764,7 +838,7 @@ export default function Home() {
                       aria-hidden="true"
                     >
                       <div className="AvatarPhoto-image" />
-                      Ay
+                      {userData?.name?.slice(0,2)}
                     </div>
                   </div>
                   <div

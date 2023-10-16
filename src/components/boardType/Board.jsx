@@ -21,6 +21,7 @@ export default function Board({
   setIsCurrentlyAddingColumn,
   newColumnName,
 }) {
+  
   return (
     <div
       role="presentation"
@@ -32,9 +33,8 @@ export default function Board({
         <div className="DragSelectContainer">
           <div className="SortableList BoardBody-columnSortableList">
             <div className="SortableList-itemContainer SortableList-itemContainer--row">
-              {data
-                .sort((a, b) => a.id - b.id)
-                .map(({ columnName, id, cards }) => (
+              {data?.columns?.sort((a, b) => a.id - b.id)
+          ?.map(({ columnName, id, cards }) => (
                   <div
                     onDrop={(e) => {
                       if (e.dataTransfer.getData("cardId")) return null;
@@ -72,7 +72,6 @@ export default function Board({
                                     addColoumn();
                                   }
                                 }}
-                                
                               />
                             ) : (
                               <h3 className="Typography Typography--colorDefault Typography--overflowTruncate Typography--h5 Typography--fontWeightMedium BoardColumnHeaderTitle BoardColumnHeader-name">
@@ -147,12 +146,9 @@ export default function Board({
                               >
                                 {cards.map((card) => (
                                   <Card
-
                                     card={card}
                                     type={columnName}
-                                    editCard={(cardId, newCardData) =>
-                                      editCard(cardId, newCardData, id)
-                                    }
+                                    editCard={editCard}
                                     columnId={id}
                                   />
                                 ))}
@@ -218,7 +214,6 @@ export default function Board({
                         as="div"
                         role="button"
                         tabIndex={0}
-                    
                         onClick={() => setIsCurrentlyAddingColumn(true)}
                       >
                         <svg

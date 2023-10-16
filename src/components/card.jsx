@@ -34,7 +34,7 @@ export default function Card({ card, type, editCard, columnId }) {
                             editCard(card.id, {
                               ...card,
                               taskName: e.target.value,
-                            })
+                            },columnId)
                           }
                           value={card.taskName}
                           placeholder="Enter Task name Here"
@@ -43,7 +43,7 @@ export default function Card({ card, type, editCard, columnId }) {
                             editCard(card.id, {
                               ...card,
                               isCurrentlyEditing: false,
-                            })
+                            },columnId)
                           }
                         />
                       ) : (
@@ -52,7 +52,7 @@ export default function Card({ card, type, editCard, columnId }) {
                             editCard(card.id, {
                               ...card,
                               isCurrentlyEditing: true,
-                            });
+                            },columnId);
                           }}
                           className="BoardCardLayout-title--indented BoardCardLayout-title"
                         >
