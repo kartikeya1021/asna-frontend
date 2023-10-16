@@ -7,10 +7,15 @@ import Home from "./pages/home/Home";
 import Dashboard from "./pages/dashboard/Dashboard";
 import HomeClone from "./pages/home/home.clone";
 import ProjectContext from "./context/Project.context";
+import Login from "./pages/authentication/Login";
+import Register from "./pages/authentication/Register";
 
 export function App() {
   const [projectData, setProjectData] = useState({});
-  const router = createBrowserRouter([
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem("isAuthenticated")
+  );
+  const [authenticationRoute, setAuthenticationRoute] = useState([
     {
       path: "/",
       element: <Home />,
@@ -28,6 +33,19 @@ export function App() {
       element: <HomeClone />,
     },
   ]);
+  const [nonauthenticationRoute, setNonauthenticationRoute] = useState([
+    {
+      path: "/",
+      element: <Login />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
+    },
+  ]);
+  const router = createBrowserRouter(
+    isAuthenticated ? authenticationRoute : nonauthenticationRoute
+  );
   useEffect(() => {
     localStorage.setItem("projectData", JSON.stringify(projectData));
     console.log("projectData", projectData);

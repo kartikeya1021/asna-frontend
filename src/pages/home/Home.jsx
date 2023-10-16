@@ -24,7 +24,9 @@ export default function Home() {
   const [haveProjectId, setHaveProjectId] = useState(
     id ? (projectData[id] ? true : false) : false
   );
-
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("userData"))
+  );
   const [data, setData] = useState({});
   /* useEffect(() => {
     setProjectData({ ...projectData, [id]: { ...projectData[id], data } });
@@ -165,10 +167,10 @@ export default function Home() {
     const result = await ProjectService.get(id);
     if (result.status == 200) {
       let data = result.data;
-      console.log(data)
+      console.log(data);
       setData(data);
     }
-  }
+  };
   useEffect(async () => {
     if (!id) {
       let id = await createBlankProject();
@@ -176,8 +178,8 @@ export default function Home() {
     }
   }, [id, location.pathname]);
   useEffect(() => {
-   /*  setData(projectData[id]?.data || []); */ 
-   getProjectById();
+    /*  setData(projectData[id]?.data || []); */
+    getProjectById();
   }, [id]);
 
   return (
@@ -231,18 +233,21 @@ export default function Home() {
                           className="TextInputBase SizedTextInput SizedTextInput--medium TextInput TextInput--medium ProjectPageHeaderProjectTitle-input"
                           type="text"
                           tabIndex={0}
-                          onChange={changeProjectName}
-                          defaultValue={
-                            data.name
-                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              changeProjectName(e);
+                            }
+                          }}
+                          onChange={(e) => {
+                            setData({ ...data, name: e.target.value });
+                          }}
+                          defaultValue={data.name}
                         />
                         <div
                           className="ProjectPageHeaderProjectTitle-shadow"
                           aria-hidden="true"
                         >
-                          {
-                            data.name
-                          }
+                          {data.name}
                         </div>
                       </div>
                     </h1>
@@ -828,7 +833,7 @@ export default function Home() {
                       aria-hidden="true"
                     >
                       <div className="AvatarPhoto-image" />
-                      Ay
+                      {userData?.name?.slice(0, 2)}
                     </div>
                   </div>
                   <div
