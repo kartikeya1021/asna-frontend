@@ -131,7 +131,7 @@ export default function Login() {
               </div>
 
               <div
-                onClick={handleSubmit}
+                onClick={()=>window.location.href="/Home"}
                 className="ThemeableRectangularButtonPresentation--isEnabled ThemeableRectangularButtonPresentation ThemeableRectangularButtonPresentation--large NuxButton LoginEmailForm-continueButton"
                 role="button"
                 tabIndex={0}
